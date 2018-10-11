@@ -1,0 +1,234 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+
+<link rel="import" href="./views/image-input-view.html">
+<link rel="import" href="./views/image-caption-view.html">
+
+<link rel="import" href="./components/emoji-generator.html">
+
+<custom-style>
+  <style is="custom-style">
+    html, body {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      width: 100vw;
+      height: 100vh;
+      padding: 16px;
+      overflow: auto;
+      background: #004D40;
+      color: white;
+
+      --theme-primary: var(--paper-green-800);
+      --theme-secondary: var(--paper-green-a400);
+      --theme-accent: white;
+      
+      --accent-font: 'Lobster', cursive;
+    }
+    * {
+      box-sizing: inherit;
+    }
+  </style>
+</custom-style>
+
+<dom-module id="emoji-caption-app">
+  <template>
+    <style>
+
+      :host {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 100%;
+      }
+
+      .content-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding-bottom: 8px;
+      }
+
+      .page-title {
+        @apply --paper-font-headline;
+      }
+      .page-title-emoji {
+        animation: fadeIn 0.3s cubic-bezier(0.4, 0.0, 0.2, 1) 1
+      }
+      .page-title-text {
+        margin: 0 8px;
+        font-family: var(--accent-font);
+        /* font-weight: 300; */
+      }
+
+      iron-pages {
+        width: 100%;
+        max-width: 500px;
+      }
+
+      .caption {
+        @apply --paper-font-caption;
+        padding: 8px;
+        font-family: var(--accent-font);
+      }
+      .caption > a {
+        color: var(--theme-secondary);
+        text-decoration: none;
+      }
+    </style>
+    <!-- ☪️ 🅰️ 🅿️ ✝️ ℹ️ 🅾️ ♑️ -->
+    <h1 class="page-title">
+      <span class="page-title-emoji">
+        <emoji-generator keyword=[[keyword1]]></emoji-generator>
+      </span>
+      <span class="page-title-text">Emoji Caption</span>
+      <span class="page-title-emoji">
+        <emoji-generator keyword=[[keyword2]]></emoji-generator>
+      </span>
+    </h1>  
+
+    <div class="content-container">
+      <paper-dialog id="modal" modal>
+        <p>
+          There was an error loading this image URL, please try again.
+        </p>
+        <div class="buttons">
+          <paper-button dialog-confirm autofocus>OK</paper-button>
+        </div>
+      </paper-dialog>
+      <app-location route="{{route}}"></app-location>
+      <app-route
+        route="{{route}}"
+        pattern="/:view"
+        data="{{routeData}}"></app-route>
+
+      <iron-pages selected="[[routeData.view]]" attr-for-selected="data-route">
+        <image-input-view 
+          data-route=""
+          route="{{route}}"
+          id="image-input-view"
+          image-url={{imageUrl}}
+          image-loading={{imageLoading}}></image-input-view>
+        <image-caption-view 
+          data-route="caption" 
+          route={{route}} 
+          id="image-caption-view"
+          image-url={{imageUrl}}>
+        </image-caption-view>
+      </iron-pages>
+
+    </div>
+    <span class="caption">Made with ❤️ by 
+      <a href="https://twitter.com/AlexJRsaunders" rel="noopener" target="_blank">Alex</a>
+      . Find the source on 
+      <a href="https://github.com/alex-saunders/emoji-caption" rel="noopener" target="_blank">Github</a>
+    </span>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class EmojiCaptionApp extends Polymer.Element {
+      static get is() { return 'emoji-caption-app'; }
+      static get properties() {
+        return {
+          keyword1: {
+            type: String,
+            value: []
+          },
+          keyword2: {
+            type: String,
+            value: []
+          },
+          image: {
+            type: String,
+          },
+          imageUrl: {
+            type: String
+          },
+          imageLoading: {
+            type: Boolean,
+            value: false,
+          }
+        };
+      }
+
+      constructor() {
+        super();
+
+        // get all emojis that have either any of the following keywords
+        // associated with them
+        const keywordsToInclude = ['face', 'photo']
+
+        this.keyword1 = this._randomKeyword(keywordsToInclude);
+        this.keyword2 = this._randomKeyword(keywordsToInclude);
+      }
+
+      connectedCallback() {
+        super.connectedCallback()
+
+        if (!this.imageUrl) {
+          this.set('route.path', '/');
+        } else {
+          this.set('route.path', '/caption');
+        }
+
+        const imageInputView = this.$['image-input-view'];
+        imageInputView.addEventListener('imageUrlSubmitted', (e) => {
+          const imageCaptionView = this.$['image-caption-view'];
+          imageCaptionView.addEventListener('imageLoaded', this._imageLoaded);
+          imageCaptionView.addEventListener('imageError', this._imageError);
+
+          this.timeout = setTimeout(() => {
+            this.imageLoading = true
+          }, 0);
+          imageCaptionView.loadImageAndCaption(this.imageUrl)
+        });
+      }
+
+      _randomKeyword(keywords) {
+        const index = Math.floor(Math.random() * keywords.length)
+        const keyword = keywords[index]
+
+        return keyword
+      }
+
+      _imageLoaded = (e) => {
+        this.$['image-caption-view'].removeEventListener('imageLoaded', this._imageLoaded);
+        clearTimeout(this.timeout);
+
+        this.set('route.path', '/caption/');
+        this.imageLoading = false;
+        this.imageUrl = "";
+      }
+
+      _imageError = (e) => {
+        this.$['image-caption-view'].removeEventListener('imageError', this._imageError);
+        clearTimeout(this.timeout);
+
+        this.set('route.path', '/');
+        this.imageLoading = false;
+
+        this.$.modal.open();
+        this.imageUrl = "";
+      }
+    }
+
+    window.customElements.define(EmojiCaptionApp.is, EmojiCaptionApp);
+  </script>
+</dom-module>

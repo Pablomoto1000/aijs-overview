@@ -1,0 +1,92 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="./emoji-generator.html">
+
+<dom-module id="caption-generator">
+  <template>
+    <!-- <CSS> -->
+    <style>
+
+    </style> <!-- </CSS> -->
+
+    <!-- <HTML> -->
+      {{caption}}
+
+    <!-- </HTML> -->
+  </template>
+
+  <script>
+    const queryString = require('query-string');
+    const credentials = require('../../credentials.js');
+
+    /**
+     * @customElement
+     * @polymer
+     */
+    class CaptionGenerator extends Polymer.Element {
+      static get is() { return 'caption-generator'; }
+      static get properties() {
+        return {
+          imageUrl: {
+            type: String,
+          }
+        };
+      }
+
+      connectedCallback() {
+        super.connectedCallback()
+      }
+
+      generateCaption() {
+        this._processImage();
+      }
+
+      _processImage(imageURL) {
+        const subscriptionKey = process.env.AZURE_SUBSCRIPTION_KEY || credentials.azure.subscriptionKey;
+        const region = process.env.AZURE_REGION || credentials.azure.region;
+
+        const uriBase = `https://${region}.api.cognitive.microsoft.com/vision/v1.0/analyze`;
+
+        const params = {
+            "visualFeatures": "Categories,Description,Color",
+            "details": "",
+            "language": "en",
+        };
+
+        const headers = new Headers({
+          "Content-Type": "application/json",
+          "Ocp-Apim-Subscription-Key": subscriptionKey
+        });
+
+        const url = `${uriBase}?${queryString.stringify(params)}`;
+
+        fetch(url, {
+          headers: headers,
+          method: 'POST',
+          body: `{"url": "${this.imageUrl}"}`,
+          // mode: 'no-cors'
+        }).then((data) => {
+          return data.json();
+        }).then((response) => {
+          this._captionGenerated(response);
+        }).catch((err) => {
+          this.dispatchEvent(new CustomEvent('captionError', {}));
+        })
+      }
+
+      _captionGenerated(data) {
+        const caption = data.description.captions[0].text;
+        const keywords = caption.split(" ");
+
+        this.dispatchEvent(new CustomEvent('captionGenerated', {
+          detail: {
+            caption,
+            keywords
+          }
+        }));
+      }
+    }
+
+    window.customElements.define(CaptionGenerator.is, CaptionGenerator);
+  </script>
+</dom-module>

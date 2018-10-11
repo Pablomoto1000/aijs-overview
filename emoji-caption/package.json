@@ -1,0 +1,36 @@
+{
+  "name": "emoji-caption",
+  "version": "1.0.0",
+  "description": "A simple app to generate emoji captions for images",
+  "engines": {
+    "node": "8.5.0",
+    "npm": "5.3.0",
+    "bower": "1.8.0"
+  },
+  "scripts": {
+    "dev": "webpack --watch",
+    "start": "bower i && webpack"
+  },
+  "author": "Alex Saunders",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-env": "^1.6.0",
+    "copy-webpack-plugin": "^4.0.1",
+    "html-webpack-plugin": "^2.29.0",
+    "nodemon": "^1.14.3",
+    "polymer-webpack-loader": "^2.0.0",
+    "serviceworker-webpack-plugin": "^0.2.3",
+    "webpack": "^3.0.0",
+    "webpack-dev-server": "^2.5.0",
+    "webpack-shell-plugin": "^0.5.0"
+  },
+  "dependencies": {
+    "bower": "^1.8.2",
+    "emojilib": "^2.2.9",
+    "express": "^4.16.2",
+    "query-string": "^5.0.1"
+  }
+}

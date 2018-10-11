@@ -1,0 +1,65 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+
+<dom-module id="toggle-icon">
+  <template>
+    <!-- <CSS> -->
+    <style>
+      paper-icon-button {
+        color: var(--paper-grey-500);
+        transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      paper-icon-button.toggled {
+        color: var(--paper-grey-800);
+      }
+    </style> <!-- </CSS> -->
+
+    <!-- <HTML> -->
+    <paper-icon-button icon="{{icon}}" class$="[[computeClass(toggled)]]"></paper-icon-button> 
+    <!-- </HTML> -->
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class ToggleIcon extends Polymer.Element {
+      static get is() { return 'toggle-icon'; }
+      static get properties() {
+        return {
+          icon: {
+            type: String
+          },
+          toggled: {
+            type: Boolean,
+            value: false,
+            observer: '_toggledSet'
+          }
+        };
+      }
+
+      connectedCallback() {
+        super.connectedCallback()
+      }
+
+      computeClass(prop) {
+        return prop ? 'toggled' : '';
+      }
+
+      _toggledSet(newval, oldval) {
+        if (newval == oldval) { return }
+
+        this.dispatchEvent(new CustomEvent('toggled', {
+          detail: {
+            newval,
+            oldval
+          }
+        }));
+      }
+    }
+
+    window.customElements.define(ToggleIcon.is, ToggleIcon);
+  </script>
+</dom-module>
