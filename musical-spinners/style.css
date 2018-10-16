@@ -1,0 +1,255 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #111111;
+  color: white;
+  font-family: 'Share', cursive;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+.intro {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+h1 {
+  padding: 60px 0 10px 0;
+  margin: 0;
+}
+h2 {
+  padding: 0;
+  margin-top: 10px;
+  font-size: 20px;
+}
+
+.intro button {
+  background-color: rgba(15, 15, 15, 0.5);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  font-size: 20px;
+}
+.intro button:active {
+  background-color: white;
+  color: #111111;
+}
+
+#loading {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.loading-item {
+  padding: 5px;
+  width: 240px;
+  display: flex;
+  align-items: center;
+}
+.loading-item .done {
+  opacity: 0;
+  color: lightgreen;
+  transition: opacity 0.5s ease-in;
+}
+.loading-item.done .done {
+  opacity: 1;
+}
+.loading-item .message {
+  display: inline-block;
+  margin-left: 5px;
+}
+
+#intro-controls {
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+}
+#intro-controls.loaded {
+  opacity: 1;
+}
+#seed-patterns-label {
+  position: absolute;
+  top: 49%;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+#regen-left,
+#regen-right {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  top: calc(50% - 20px);
+  margin: 0;
+  border-radius: 50%;
+  outline: none;
+}
+#regen-left {
+  left: calc(35% - 20px);
+}
+#regen-right {
+  right: calc(35% - 20px);
+}
+#generate-button {
+  display: inline-block;
+  width: 250px;
+  height: 50px;
+  left: calc(50% - 125px);
+  top: 75%;
+  background-color: white;
+  color: black;
+  font-family: 'Share', cursive;
+}
+#gen-controls {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  top: 75%;
+  text-align: center;
+  font-size: 12px;
+}
+#key-controls {
+  margin-top: 15px;
+}
+#key-controls select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: white;
+  font-family: 'Share', cursive;
+  border: 0 solid rgba(255, 255, 255, 0.5);
+  border-bottom-width: 1px;
+  text-align: center;
+  margin: 0 2px;
+}
+footer {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  bottom: 10px;
+  text-align: center;
+  font-size: 12px;
+  font-style: italic;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+.playing footer {
+  opacity: 0;
+}
+.playing .glitchButton {
+  opacity: 0;
+}
+
+a,
+a:visited {
+  color: white;
+}
+
+.vis {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}
+canvas {
+  width: 100%;
+  height: 100%;
+}
+
+#halp-callout,
+#settings-callout {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  border: 2px solid white;
+  text-align: center;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+#settings-callout .material-icons,
+#halp-callout .material-icons {
+  font-size: 30px;
+  line-height: 40px;
+}
+#settings-callout {
+  top: 20px;
+  background: white;
+  color: black;
+}
+#settings-callout:hover {
+  background: black;
+  color: white;
+}
+#halp-callout {
+  top: 80px;
+  background: black;
+  color: white;
+}
+#halp-callout:hover {
+  background: white;
+  color: black;
+}
+
+#halp-callout.visible,
+#settings-callout.visible {
+  opacity: 1;
+}
+.modal {
+  position: fixed;
+  top: 50px;
+  bottom: 50px;
+  left: 100px;
+  right: 100px;
+  display: flex;
+  justify-content: space-around;
+  background-color: rgba(15, 15, 15, 0.9);
+  border: 1px solid #666;
+  transform: translateY(-120%);
+  opacity: 0;
+  transition: all 0.2s ease-out;
+  overflow-y: auto;
+  z-index: 1;
+}
+.modal.open {
+  transform: translateY(0);
+  opacity: 1;
+}
+.modal .column {
+  flex: 1;
+  padding: 30px;
+  line-height: 1.5;
+}
+.modal .column:first-child {
+  padding-left: 60px;
+}
+.modal .column:last-child {
+  padding-right: 60px;
+}
+.modal .key {
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  padding: 1px 6px;
+}
